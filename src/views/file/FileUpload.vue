@@ -128,37 +128,48 @@
 			UploadSubmit(param) {
 				var file = param.file;
 				this.courseId = JSON.parse(getStorage("courseInfo")).courseId
-				//console.log(param.file);
-				var file_form = new FormData(); //获取上传表单（文件）
-				file_form.append("file", file);
-				file_form.append('courseId', this.courseId)
-				if (file_form) {
-					upload(file_form).then((res) => {
-							console.log(res);
+				var repeat = 0;
+				for(let i in this.file){	
+					if(file.name == this.file[i].fileName){
+						repeat = repeat + 1	
+					}
+				}
+				if(repeat == 0){
+					var file_form = new FormData(); //获取上传表单（文件）
+					file_form.append("file", file);
+					file_form.append('courseId', this.courseId)
+					if (file_form) {
+						upload(file_form).then((res) => {
+								console.log(res);
+							})
+							.catch((err) => {
+								console.log(err);
+							});
+					}
+					console.log(file)
+					const data = {
+						courseId: this.courseId,
+						fileName: file.name,
+						fileType: file.type,
+						fileUrl: "D://ideaWork//design//SystemData//" + this.courseId + "//" + file.name,
+					}
+					if (data) {
+						add(data).then(res => {
+							this.$message({
+								message: '上传成功',
+								type: 'success'
+							});
+							this.initFile();
+						}).catch(() => {
+							this.$message.error('失败');
 						})
-						.catch((err) => {
-							console.log(err);
-						});
+					}
+				}else{
+					this.$message.error('系统中已有同名文件，请修改文件名');
 				}
-				console.log(file)
-				const data = {
-					courseId: this.courseId,
-					fileName: file.name,
-					fileType: file.type,
-					fileUrl: "D://ideaWork//design//SystemData//" + this.courseId + "//" + file.name,
-				}
-				if (data) {
-					add(data).then(res => {
-						this.$message({
-							message: '上传成功',
-							type: 'success'
-						});
-						this.initFile();
-					}).catch(() => {
-						this.$message.error('失败');
-					})
-				}
-				console.log(data)
+				
+				
+				
 			},
 
 			submitUpload() {

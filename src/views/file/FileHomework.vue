@@ -175,7 +175,7 @@
 											'YYYY-MM-DD HH:mm:ss')
 									}
 
-									console.log(this.Homework)
+									
 								})
 							}
 						})
@@ -183,7 +183,7 @@
 					})
 				}
 			},
-			changeHomeworkList(row) {
+			changeHomeworkList(homeworkId) {
 				this.courseId = JSON.parse(getStorage("courseInfo")).courseId
 				this.studentId = JSON.parse(getStorage("userInfo")).studentId
 
@@ -197,10 +197,14 @@
 				if (data) {
 					queryById(data).then(res => {
 						this.List = res.datas
+						for(let i in this.List){
+							this.List[i].homeworkDeadline = this.$moment(this.List[i].homeworkDeadline).format(
+							'YYYY-MM-DD HH:mm:ss')
+						}
 						queryCidSid(cs).then(ress => {
 							var teamId = ress.datas[0].teamId
 							const datas = {
-								homeworkId: row.homeworkId,
+								homeworkId: homeworkId,
 								teamId: teamId,
 							}
 							// console.log(datas,"datas")
@@ -220,8 +224,9 @@
 				}
 			},
 			refresh(row) {
+				console.log(row,"row")
 				this.dialogFormVisible = false
-				this.changeHomeworkList(row)
+				this.changeHomeworkList(row.homeworkId)
 				// this.initHomeworkList()
 			},
 			handleClick(row) {
@@ -258,7 +263,8 @@
 				const data = {
 					hsId: scoperow.hsId
 				}
-				console.log(data)
+				
+				console.log(scoperow,"scoperow")
 				if (data) {
 					deleteByIdHsTeam(data).then(res => {
 						deleteByIdHS(data).then(res => {
@@ -266,7 +272,7 @@
 								message: '删除成功',
 								type: 'success'
 							});
-							this.initHomeworkList()
+							this.changeHomeworkList(scoperow.homeworkId)
 						})
 					})
 
@@ -276,82 +282,73 @@
 				var file = param.file;
 				this.courseId = JSON.parse(getStorage("courseInfo")).courseId
 				this.studentId = JSON.parse(getStorage("userInfo")).studentId
-
-				const datas = {
-					courseId: this.courseId,
-					studentId: this.studentId
+				var repeat = 0;
+				for(let i in this.Homework){	
+					if(file.name == this.Homework[i].hsName){
+						repeat = repeat + 1	
+					}
 				}
-				if (datas) {
-					queryCidSid(datas).then(res => {
-						var teamId = res.datas[0].teamId
-
-						var file_form = new FormData(); //获取上传表单（文件）
-						file_form.append("file", file);
-						file_form.append('courseId', this.courseId)
-						file_form.append('teamId', teamId)
-						file_form.append('homeworkId', this.questionForm.homeworkId)
-						console.log(file_form)
-						if (file_form) {
-							uploadHS(file_form).then(res => {
-									let aData = new Date();
-									aData = this.$moment(aData).utcOffset(480)._d
-									const data = {
-										homeworkId: this.questionForm.homeworkId,
-										hsName: file.name,
-										hsType: file.type,
-										hsUrl: "D://ideaWork//design//SystemData//" + this.courseId +
-											"//" + this.questionForm
-											.homeworkId + "//" + teamId + "//" + file.name,
-										hsTime: aData
-									}
-									if (data) {
-										addHS(data).then(res => {
-											const HsTeam = {
-												hsId: res.datas.hsId,
-												teamId: teamId
-											}
-											if (HsTeam) {
-												addHsTeam(HsTeam).then(resss => {
-													this.$message({
-														message: '上传成功',
-														type: 'success'
-													});
-												})
-											}
-
-
-										}).catch(() => {
-											this.$message.error('失败');
-										})
-									}
-								})
-								.catch((err) => {
-									console.log(err);
-								});
-						}
-
-					})
+				if(repeat == 0){
+					const datas = {
+						courseId: this.courseId,
+						studentId: this.studentId
+					}
+					if (datas) {
+						queryCidSid(datas).then(res => {
+							var teamId = res.datas[0].teamId
+					
+							var file_form = new FormData(); //获取上传表单（文件）
+							file_form.append("file", file);
+							file_form.append('courseId', this.courseId)
+							file_form.append('teamId', teamId)
+							file_form.append('homeworkId', this.questionForm.homeworkId)
+							
+							if (file_form) {
+								uploadHS(file_form).then(res => {
+										let aData = new Date();
+										aData = this.$moment(aData).utcOffset(480)._d
+										const data = {
+											homeworkId: this.questionForm.homeworkId,
+											hsName: file.name,
+											hsType: file.type,
+											hsUrl: "D://ideaWork//design//SystemData//" + this.courseId +
+												"//" + this.questionForm
+												.homeworkId + "//" + teamId + "//" + file.name,
+											hsTime: aData
+										}
+										if (data) {
+											addHS(data).then(res => {
+												const HsTeam = {
+													hsId: res.datas.hsId,
+													teamId: teamId
+												}
+												if (HsTeam) {
+													addHsTeam(HsTeam).then(resss => {
+														this.$message({
+															message: '上传成功',
+															type: 'success'
+														});
+													})
+												}
+					
+					
+											}).catch(() => {
+												this.$message.error('失败');
+											})
+										}
+									})
+									.catch((err) => {
+										console.log(err);
+									});
+							}
+					
+						})
+					}
+				}else{
+					this.$message.error('您的小组已提交了同名文件，请修改文件名后再上传');
 				}
-				//console.log(param.file);
-
-				// console.log(file)
-				// const data = {
-				// 	courseId: this.courseId,
-				// 	fileName: file.name,
-				// 	fileType: file.type,
-				// 	fileUrl: "E://file//" + this.courseId + "//" + file.name,
-				// }
-				// if (data) {
-				// 	add(data).then(res => {
-				// 		this.$message({
-				// 			message: '上传成功',
-				// 			type: 'success'
-				// 		});
-				// 	}).catch(() => {
-				// 		this.$message.error('失败');
-				// 	})
-				// }
-				// console.log(data)
+				
+			
 			},
 
 			submitUpload() {
