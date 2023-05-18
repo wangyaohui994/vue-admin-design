@@ -241,72 +241,6 @@
 					})
 				}
 			},
-			// getVerifyTime(row) {
-			// 	let aData = new Date();
-			// 	aData = this.$moment(aData).utcOffset(480)._d
-			// 	// console.log(aData, "Date")
-			// 	const data = {
-			// 		teamId: row.teamId,
-			// 		grEndtime: aData,
-			// 		grType: "已答辩"
-			// 	}
-			// 	if (data) {
-			// 		updateGroupReply(data).then(res => {
-			// 			this.initGroupTeam();
-			// 		})
-			// 	}
-			// 	for (let i in this.List) {
-			// 		if (i > row.order) {
-			// 			const datas = {
-			// 				teamId: this.List[i].teamId,
-			// 				grTime: (this.$moment(aData).add((i - row.order - 1) * this.questionForm.riGrouptime, 'm'))
-			// 					._d
-			// 			}
-
-			// 			updateGroupReply(datas).then(res => {
-			// 				this.initGroupTeam();
-			// 			})
-			// 		} else {
-
-			// 		}
-			// 	}
-			// 	this.isGeting = false
-			// 	this.disable = false
-			// 	this.getCode = '答辩开始'
-			// 	this.count = 0
-			// 	clearInterval(countDown)
-
-			// },
-			// getVerifyCode(row) {
-			// 	console.log(row)
-			// 	let aData = new Date();
-			// 	aData = this.$moment(aData).utcOffset(480)._d
-
-			// 	const data = {
-			// 		teamId: row.teamId,
-			// 		grStarttime: aData
-			// 	}
-			// 	if (data) {
-			// 		updateGroupReply(data).then(res => {
-			// 			this.initGroupTeam();
-			// 		})
-			// 	}
-			// 	this.count = this.questionForm.riGrouptime * 60
-			// 	var countDown = setInterval(() => {
-			// 		if (this.count < 1) {
-			// 			this.isGeting = false
-			// 			this.disable = false
-			// 			this.getCode = '答辩开始'
-			// 			this.count = this.questionForm.riGrouptime
-			// 			// this.count = 120
-			// 			clearInterval(countDown)
-			// 		} else {
-			// 			this.isGeting = true
-			// 			this.disable = true
-			// 			this.getCode = this.count-- + 's后答辩结束'
-			// 		}
-			// 	}, 1000)
-			// },
 			handleCreate() {
 
 				// console.log(this.List)
@@ -361,12 +295,23 @@
 											.utcOffset(480)._d).add(i * this.questionForm
 											.riGrouptime, 'm'))._d, //简写
 										grType: "未答辩",
-
+										grEndtime :null,
+										grStarttime :null,
 									}
 									// console.log(groupReply)
-									updateGroupReply(groupReply).then(res => {
-										this.initGroupTeam();
+									queryByIdGroupReply(groupReply).then(group =>{
+										
+										if(group.datas.length != 0){
+											updateGroupReply(groupReply).then(res => {
+												this.initGroupTeam();
+											})
+										}else{
+											addGroupReply(groupReply).then(res => {
+												this.initGroupTeam();
+											})
+										}
 									})
+									
 									// addGroupReply()
 								}
 								this.$message({

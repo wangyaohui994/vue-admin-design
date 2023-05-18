@@ -50,6 +50,7 @@
 							<el-button slot="trigger" size="small" type="primary">选取文件</el-button>
 							<el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传
 							</el-button>
+							<div slot="tip" class="el-upload__tip">能够上传的文件类型有：jpeg,jpg,png,bmp,ppt,pdf,doc,docx,xls,zip，且单个文件不超过10MB</div>
 						</el-upload>
 					</el-form-item>
 				</el-form>
@@ -221,7 +222,7 @@
 			refresh(row) {
 				this.dialogFormVisible = false
 				this.changeHomeworkList(row)
-				this.initHomeworkList()
+				// this.initHomeworkList()
 			},
 			handleClick(row) {
 				this.dialogFormVisible = true //控制弹窗显示

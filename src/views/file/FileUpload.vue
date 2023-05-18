@@ -4,6 +4,7 @@
 			:http-request="UploadSubmit" :file-list="fileList" :auto-upload="false" :before-upload="beforeAvatarUpload">
 			<el-button slot="trigger" size="small" type="primary">选取文件</el-button>
 			<el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传</el-button>
+			<div slot="tip" class="el-upload__tip">能够上传的文件类型有：jpeg,jpg,png,bmp,ppt,pdf,doc,docx,xls,zip，且单个文件不超过10MB</div>
 		</el-upload>
 
 		<el-card>
@@ -17,6 +18,7 @@
 					<template slot-scope="scope">
 						<el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
 						<el-button type="text" size="small" @click="downLoad(scope.row)">下载</el-button>
+						<el-button type="text" style="color: crimson;" @click="delet(scope.row)" v-show="!isStudent">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -63,6 +65,7 @@
 		add,
 		update,
 		queryById,
+		deleteById,
 		upload,
 		downloadFile,
 		download,
@@ -78,6 +81,8 @@
 				fileList: [],
 				courseId: [],
 				content: [],
+				radio : "",
+				isStudent:"",
 			}
 		},
 		methods: {
@@ -90,6 +95,12 @@
 				showData(data, row);
 			},
 			initFile() {
+				this.radio = JSON.parse(getStorage("radio"))
+				if (this.radio == 1) {
+					this.isStudent = true
+				} else {
+					this.isStudent = false
+				}
 				this.courseId = JSON.parse(getStorage("courseInfo")).courseId
 				const data = {
 					courseId: this.courseId,
@@ -171,6 +182,24 @@
 				}
 				// return isJPG && isLt2M;
 				return isLt2M;
+			},
+			delet(row){
+				const data = {
+					fileId: row.fileId
+				}
+				console.log(data)
+				if (data) {
+					
+						deleteById(data).then(res => {
+							this.$message({
+								message: '删除成功',
+								type: 'success'
+							});
+							this.initFile()
+						})
+					
+				
+				}
 			}
 		},
 

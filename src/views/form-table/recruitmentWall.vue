@@ -3,6 +3,9 @@
 		<el-button size="small" type="primary" icon="el-icon-plus" @click="createRecruit" v-show="isStudent">
 			发布/修改招募
 		</el-button>
+		<el-button size="small" type="warning" @click="lookApply" v-show="isStudent">
+			查看申请信息
+		</el-button>
 		<!-- <el-button size="small" type="primary" icon="el-icon-thumb" @click="sortSimilar()" v-show="isStudent">
 			按推荐程度排序
 		</el-button>
@@ -13,6 +16,40 @@
 			v-show="isStudent">
 			创建/修改小组
 		</el-button>
+		<el-drawer title="我是标题" :visible.sync="drawer" :with-header="false" >
+			<!-- <el-card shadow="always" :body-style="{padding: '0px'}"> -->
+				<template>
+					<el-table :data="applyData" style="width: 100%">
+						<el-table-column label="姓名" width="80">
+							<template slot-scope="scope">
+								<el-popover trigger="hover" placement="top">
+									<p>姓名: {{ scope.row.studentName }}</p>
+									<p>擅长: {{ scope.row.studentSkill }}</p>
+									<div slot="reference" class="name-wrapper">
+										<el-tag size="medium">{{ scope.row.studentName }}</el-tag>
+									</div>
+								</el-popover>
+							</template>
+						</el-table-column>
+						<el-table-column label="申请宣言" width="180">
+							<template slot-scope="scope">
+								<!-- 	<i class="el-icon-time"></i> -->
+								<span style="margin-left: 10px">{{ scope.row.applicationManifesto }}</span>
+							</template>
+						</el-table-column>
+						<el-table-column label="操作">
+							<template slot-scope="scope">
+								<el-button size="mini" type="primary" @click="accept(scope.$index, scope.row)">同意
+								</el-button>
+								<el-button size="mini" type="danger" @click="refuse(scope.$index, scope.row)">拒绝
+								</el-button>
+							</template>
+						</el-table-column>
+					</el-table>
+				</template>
+			<!-- </el-card> -->
+		</el-drawer>
+		
 		<el-dialog :visible.sync="dialogForm">
 			<el-form :model="Recruit" ref="dataForm" label-position="left" label-width="90px"
 				style="width: 400px; margin-left:50px;">
@@ -109,7 +146,10 @@
 		queryById
 	} from '@/api/getStudent'
 	import {
-		addApplication
+		addApplication,
+		deleteByIdApplication,
+		queryByRidApplication,
+		queryByRSidApplication
 	} from '@/api/getApplication'
 	import {
 		textCompare
@@ -139,6 +179,9 @@
 				studentList: [],
 				teamId: [],
 				isStudent: true,
+				
+				applyData :[],
+				drawer :false,
 				// recruitSimilar:{
 				// 	recruitId : [],
 				// 	Similar : [],
@@ -209,6 +252,92 @@
 				// console.log(this.dataList,"this.dataList")
 				// console.log( this.dataList,"this.dataList[0].similar")
 				// console.log(typeof this.dataList[0].recruitId,"this.dataList[0].recruitId")
+			},
+			ininApply() {
+				this.courseId = JSON.parse(getStorage("courseInfo")).courseId
+				this.studentId = JSON.parse(getStorage("userInfo")).studentId
+				var teamId = 1
+				const datas = {
+					courseId: this.courseId,
+					studentId: this.studentId
+				}
+				if (datas) {
+					queryCidSid(datas).then(res => {
+						var recruitId = res.datas[0].recruitId
+						const data = {
+							recruitId: recruitId
+						}
+						if (data) {
+							queryByRSidApplication(data).then(res => {
+								this.applyData = res.datas
+			
+							}).catch(() => {
+								// this.$message.error('出现错误');
+							})
+						}
+					}).catch(() => {
+						// this.$message.error('出现错误');
+					})
+				}
+			},
+			refuse(index, row) {
+				const data = {
+					applicationId: row.applicationId,
+				}
+				if (data) {
+					deleteByIdApplication(data).then(res => {
+						this.$message({
+							message: '成功拒绝该同学的申请',
+							type: 'success'
+						});
+						this.ininApply();
+					}).catch(() => {
+						this.$message.error('没有获取到学生id');
+					})
+				}
+				
+				
+			},
+			accept(index, row) {
+				console.log(index, row);
+				this.courseId = JSON.parse(getStorage("courseInfo")).courseId
+				this.studentId = JSON.parse(getStorage("userInfo")).studentId
+				var teamId = 1
+				const datas = {
+					courseId: this.courseId,
+					studentId: this.studentId
+				}
+				if (datas) {
+					queryCidSid(datas).then(res => {
+						teamId = res.datas[0].teamId
+						const data = {
+							applicationId: row.applicationId,
+						}
+						if (data) {
+							deleteByIdApplication(data).then(res => {
+								const Ts = {
+									studentId: row.studentId,
+									teamId: teamId
+								}
+								if (Ts) {
+									addTeamStudent(Ts).then(ressss => {
+										this.$message({
+											message: '已经将该同学添加至您的小组',
+											type: 'success'
+										});
+										this.ininApply();
+									})
+								}
+							}).catch(() => {
+								this.$message.error('没有获取到学生id');
+							})
+						}
+					}).catch(() => {
+						this.$message.error('您还没有加入任何一个小组，去招募墙看看吧');
+					})
+				}
+				
+				
 			},
 			compareSimilar(key) {
 				return function(a, b) {
@@ -445,13 +574,16 @@
 				}
 				this.dialogFormVisible = false
 			},
+			lookApply(){
+				this.drawer = true
+			},
 		},
 
 		mounted() {
 
 			this.$nextTick(() => {
 				this.initRecruit();
-
+				this.ininApply();
 			})
 		},
 

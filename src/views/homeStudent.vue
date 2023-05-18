@@ -29,7 +29,7 @@
 			</el-col>
 		</el-row>
 
-		<el-row class="date-box" :gutter="20" v-show="isStudent">
+		<!-- <el-row class="date-box" :gutter="20" v-show="isStudent">
 			<el-col :span="16">
 				<el-card shadow="always" :body-style="{padding: '0px'}">
 					<template>
@@ -47,7 +47,7 @@
 							</el-table-column>
 							<el-table-column label="申请宣言" width="180">
 								<template slot-scope="scope">
-									<!-- 	<i class="el-icon-time"></i> -->
+									
 									<span style="margin-left: 10px">{{ scope.row.applicationManifesto }}</span>
 								</template>
 							</el-table-column>
@@ -63,7 +63,7 @@
 					</template>
 				</el-card>
 			</el-col>
-			<!-- <el-col :span="12">
+			 <el-col :span="12">
 				<el-card shadow="always" :body-style="{padding: '0px'}">
 					<div class="data-desc data-lang-box">
 						<div class="data-lang-title">项目语言构成</div>
@@ -75,12 +75,7 @@
 				</el-card>
 			</el-col> -->
 
-			<!-- <el-col :span="8">
-        <el-card shadow="always" :body-style="{padding: '0px'}">
-          <ChartsPie :title="text" type="ring" :data="chartsPieData" class="data-desc" />
-        </el-card>
-      </el-col> -->
-		</el-row>
+			
 		<!-- <el-row class="date-box" :gutter="20">
       <el-col :span="12">
         <el-card shadow="always" :body-style="{padding: '0px'}">

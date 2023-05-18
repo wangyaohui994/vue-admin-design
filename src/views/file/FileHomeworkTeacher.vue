@@ -221,25 +221,36 @@
 				
 				if(data){
 					queryByIdHS(data).then(resss =>{
-						for (let i in resss.datas){
-							const datas = {
-								hsId : resss.datas[i].hsId
-							}
-							if(datas){
-								deleteByIdHsTeam(datas).then(h =>{
-									deleteByhwIdHS(data).then(ress =>{
-										deleteById(data).then(res =>{
-											this.$message({
-												message: '作业删除成功',
-												type: 'success'
-											});
-											this.initHomeworkList();
+						if(resss.datas.length != 0){
+							for (let i in resss.datas){
+								const datas = {
+									hsId : resss.datas[i].hsId
+								}
+								if(datas){
+									deleteByIdHsTeam(datas).then(h =>{
+										deleteByhwIdHS(data).then(ress =>{
+											deleteById(data).then(res =>{
+												this.$message({
+													message: '作业删除成功',
+													type: 'success'
+												});
+												this.initHomeworkList();
+											})
 										})
 									})
-								})
-							}
-							
-						} 
+								}
+								
+							} 
+						}else{
+							deleteById(data).then(res =>{
+								this.$message({
+									message: '作业删除成功',
+									type: 'success'
+								});
+								this.initHomeworkList();
+							})
+						}
+						
 						
 					})
 			
