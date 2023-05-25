@@ -277,7 +277,8 @@
 									teamId: this.List[i].teamId,
 									grTime: (this.$moment(this.$moment(this.questionForm.riTime).utcOffset(480)
 										._d).add(i * this.questionForm.riGrouptime, 'm'))._d, //简写
-									grType: "未答辩"
+									grType: "未答辩",
+									
 								}
 								console.log(groupReply, "groupReply")
 								addGroupReply(groupReply).then(res => {

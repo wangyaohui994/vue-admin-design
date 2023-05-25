@@ -17,3 +17,11 @@ export function addCS(data){
 		data
 	})
 }
+
+export function deleteByidCS(data){
+	return request({
+		url: '/courseStudent/deleteById',//请求接口
+		method: 'post',//请求方式
+		data
+	})
+}

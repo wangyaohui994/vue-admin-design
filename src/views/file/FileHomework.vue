@@ -160,24 +160,29 @@
 							'YYYY-MM-DD HH:mm:ss')
 						}
 						queryCidSid(cs).then(ress => {
-							var teamId = ress.datas[0].teamId
-							const datas = {
-								homeworkId: this.List[0].homeworkId,
-								teamId: teamId,
+							if(ress.total != 0){
+								var teamId = ress.datas[0].teamId
+								const datas = {
+									homeworkId: this.List[0].homeworkId,
+									teamId: teamId,
+								}
+								// console.log(datas,"datas")
+								if (datas) {
+									queryByHTIdHS(datas).then(ress => {
+										this.Homework = ress.datas
+										for (let i in this.Homework) {
+											this.Homework[i].hsTime = this.$moment(this.Homework[i]
+												.hsTime).format(
+												'YYYY-MM-DD HH:mm:ss')
+										}
+								
+										
+									})
+								}
+							}else{
+								this.$message.error('您还没有加入任何一个小组，找到小组后再来做作业吧');
 							}
-							// console.log(datas,"datas")
-							if (datas) {
-								queryByHTIdHS(datas).then(ress => {
-									this.Homework = ress.datas
-									for (let i in this.Homework) {
-										this.Homework[i].hsTime = this.$moment(this.Homework[i]
-											.hsTime).format(
-											'YYYY-MM-DD HH:mm:ss')
-									}
-
-									
-								})
-							}
+							
 						})
 
 					})

@@ -16,6 +16,10 @@
 			v-show="isStudent">
 			创建/修改小组
 		</el-button>
+		<el-button style="float: right;" size="small" type="danger" icon="el-icon-s-custom" @click="deleteTeam"
+			v-show="isStudent">
+			退出小组
+		</el-button>
 		<el-drawer title="我是标题" :visible.sync="drawer" :with-header="false" >
 			<!-- <el-card shadow="always" :body-style="{padding: '0px'}"> -->
 				<template>
@@ -125,14 +129,23 @@
 <script>
 	import {
 		add,
+		deleteByIdRecruit,
 		updateRecruit,
 		queryByIdRecruit,
 		queryByTidRecruit
 	} from '@/api/getRecruit'
 	import {
 		addTeam,
-		updateTeam
+		updateTeam,
+		deleteByIdTeam
 	} from '@/api/getTeam'
+	import {
+		deleteByIdHsTeam,
+		deleteBytIdHsTeam
+	} from '@/api/getHsTeam'
+	import {
+		deleteBytIdGroupReply
+	} from '@/api/getGroupReply'
 	import {
 		setStorage,
 		getStorage
@@ -140,7 +153,9 @@
 	import {
 		queryByteamId,
 		queryCidSid,
-		addTeamStudent
+		addTeamStudent,
+		deleteByIdTeamStudent,
+		deleteBytsIdTeamStudent
 	} from '@/api/getTeamStudent'
 	import {
 		queryById
@@ -148,6 +163,7 @@
 	import {
 		addApplication,
 		deleteByIdApplication,
+		deleteByrIdApplication,
 		queryByRidApplication,
 		queryByRSidApplication
 	} from '@/api/getApplication'
@@ -497,6 +513,99 @@
 				queryCidSid(datas).then(res => {
 					this.team.teamName = res.datas[0].teamName
 				})
+			},
+			deleteTeam(){
+				//退出小组
+				this.courseId = JSON.parse(getStorage("courseInfo")).courseId
+				this.studentId = JSON.parse(getStorage("userInfo")).studentId
+				
+				const datas = {
+					courseId: this.courseId,
+					studentId: this.studentId
+				}
+				if (datas) {
+					queryCidSid(datas).then(res => {
+						if (res.datas.length != 0) {
+							var teamId = res.datas[0].teamId
+							const data ={
+								teamId : teamId
+							}
+							const ts = {
+								teamId : teamId,
+								studentId : this.studentId
+							}
+							console.log(ts,"ts")
+							if(data){
+								queryByteamId(data).then(stu =>{
+									if(stu.total == 1){
+										//小组最后一名成员要退出小组，该小组也随之消失，所有和该小组有关的表的信息都要删除
+										// this.$message.error('由于您是该小组最后一名成员,所以无法退出该小组');
+										queryByTidRecruit(data).then(res =>{
+											if(res.total != 0){
+												const rid = {
+													recruitId : res.datas[0].recruitId
+												}
+												console.log(rid,"rid")
+												//application
+												if(rid){
+													queryByRidApplication(rid).then(res =>{
+														
+															deleteByrIdApplication(rid).then(ress =>{
+																deleteByIdRecruit(rid).then(res =>{
+																	//teamStudent
+																	if(ts){
+																		deleteBytsIdTeamStudent(ts).then(res =>{
+																			//hs_team
+																			deleteBytIdHsTeam(data).then(res =>{
+																				//groupreply
+																				deleteBytIdGroupReply(data).then(res =>{
+																					//team
+																					deleteByIdTeam(data).then(res =>{
+																						this.$message({
+																							message: '由于您是该小组最后一名成员，该小组将解散，请及时加入其他小组',
+																							type: 'success'
+																						});
+																						this.initRecruit()
+																					})
+																				})
+																			})
+																		})
+																	}
+																})
+															})
+														
+													})
+													
+												}
+											}
+											
+											
+										})
+										
+										
+										
+										
+										
+									}else{
+										if(ts){
+											deleteBytsIdTeamStudent(ts).then(res =>{
+												this.$message({
+													message: '您已成功退出该小组，请及时加入其他小组',
+													type: 'success'
+												});
+											})
+										}
+										
+										//只需在teamStudent表中将该学生的数据除去即可
+									}
+								})
+							}
+							
+						} else {
+							this.$message.error('您还没有加入任何一个小组，无法退出小组');
+						}
+					})
+				}
 			},
 			submitTeam() {
 				this.courseId = JSON.parse(getStorage("courseInfo")).courseId

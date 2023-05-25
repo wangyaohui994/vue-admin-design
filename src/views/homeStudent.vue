@@ -4,6 +4,7 @@
 			<template #suffix>
 				<el-button type="primary" style="height: 30px;" @click="joinClass()">加入课程</el-button>
 			</template>
+			
 		</el-input>
 		<el-input style="width: 250px;height: 50px;" v-model="courseSetName" placeholder="输入课程名称" v-show="!isStudent">
 			<template #suffix>
@@ -22,6 +23,10 @@
 						</div>
 						<el-button type="text" @click="copy(item.courseId)" >复制编号</el-button>
 						<el-button type="primary" style="float: right;" @click.native.prevent="changeCourse(item)">进入
+						</el-button>
+						<el-button type="danger" style="float: right;" @click.native.prevent="deleteCourseStu(item)" v-show="isStudent">退出
+						</el-button>
+						<el-button type="danger" style="float: right;" @click.native.prevent="deleteCourseTea(item)" v-show="!isStudent">解散
 						</el-button>
 					</el-card>
 
@@ -97,10 +102,12 @@
 	import {
 		add,
 		queryById,
-		querybystudentid
+		querybystudentid,
+		deleteById
 	} from '@/api/getCourse'
 	import {
-		addCS
+		addCS,
+		deleteByidCS
 	} from '@/api/getCourseStudent'
 	import {
 		getStorage,
@@ -267,6 +274,39 @@
 					type: 'success'
 				});
 				this.reload()
+			},
+			deleteCourseStu(item){
+				this.studentId = JSON.parse(getStorage("userInfo")).studentId
+				this.courseId = JSON.parse(getStorage("courseInfo")).courseId
+				const data= {
+					studentId : this.studentId,
+					courseId : item.courseId
+				}
+				if(data){
+					deleteByidCS(data).then(res =>{
+						this.$message({
+							message: '成功退出该课程',
+							type: 'success'
+						});
+						this.initCourse()
+					})
+				}
+				
+			},
+			deleteCourseTea(item){
+				const data= {
+					courseId : item.courseId
+				}
+				if(data){
+					deleteById(data).then(res=>{
+						this.$message({
+							message: '成功解散该课程',
+							type: 'success'
+						});
+						this.initCourse()
+					})
+				}
+				
 			},
 			submitUpload() {
 				this.$refs.upload.submit();
