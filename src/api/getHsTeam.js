@@ -15,6 +15,15 @@ export function deleteByIdHsTeam(data){
 		data
 	})
 }
+
+export function deleteBytIdHsTeam(data){
+	return request({
+		url: '/hsTeam/deleteBytId',//请求接口
+		method: 'post',//请求方式
+		data
+	})
+}
+
 export function updateHsTeam(data){
 	return request({
 		url: '/hsTeam/update',//请求接口

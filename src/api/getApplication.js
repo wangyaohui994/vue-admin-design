@@ -15,6 +15,14 @@ export function deleteByIdApplication(data){
 		data
 	})
 }
+
+export function deleteByrIdApplication(data){
+	return request({
+		url: '/application/deleteByrId',//请求接口
+		method: 'post',//请求方式
+		data
+	})
+}
 export function updateApplication(data){
 	return request({
 		url: '/application/update',//请求接口

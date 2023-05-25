@@ -15,6 +15,15 @@ export function deleteByIdGroupReply(data){
 		data
 	})
 }
+
+export function deleteBytIdGroupReply(data){
+	return request({
+		url: '/groupreply/deleteBytId',//请求接口
+		method: 'post',//请求方式
+		data
+	})
+}
+
 export function updateGroupReply(data){
 	return request({
 		url: '/groupreply/update',//请求接口

@@ -8,7 +8,7 @@ export function add(data){
 		data
 	})
 }
-export function deleteById(data){
+export function deleteByIdRecruit(data){
 	return request({
 		url: '/recruit/deleteById',//请求接口
 		method: 'post',//请求方式
