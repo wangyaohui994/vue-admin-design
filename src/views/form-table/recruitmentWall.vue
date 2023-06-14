@@ -80,8 +80,9 @@
 						{{model.recruitManifesto}}
 					</div>
 					<div style="font-size: 14px;margin-bottom: 18px;" v-show="model.recommend">
-						<img style='max-width:10%;height:auto;float: right;' src="@/assets/img/recommend.jpg"
-							class="image">
+						<!-- <img style='max-width:10%;height:auto;float: right;' src="@/assets/img/recommend.jpg"
+							class="image"> -->
+						<el-tag style='float: right;' type="success">推荐</el-tag>
 					</div>
 				</el-card>
 			</el-col>
@@ -577,6 +578,26 @@
 													})
 													
 												}
+											}else{
+												//teamStudent
+												if(ts){
+													deleteBytsIdTeamStudent(ts).then(res =>{
+														//hs_team
+														deleteBytIdHsTeam(data).then(res =>{
+															//groupreply
+															deleteBytIdGroupReply(data).then(res =>{
+																//team
+																deleteByIdTeam(data).then(res =>{
+																	this.$message({
+																		message: '由于您是该小组最后一名成员，该小组将解散，请及时加入其他小组',
+																		type: 'success'
+																	});
+																	this.initRecruit()
+																})
+															})
+														})
+													})
+												}
 											}
 											
 											
@@ -732,8 +753,8 @@
 
 	.el-card {
 		margin-bottom: 20px;
-		margin-top: 30px;
-		min-height: 190px;
+		margin-top: 25px;
+		min-height: 150px;
 	}
 
 	.box {

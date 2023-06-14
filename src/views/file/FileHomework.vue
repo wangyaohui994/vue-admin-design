@@ -41,7 +41,7 @@
 					</el-descriptions-item>
 				</el-descriptions>
 			
-				<el-form :model="questionForm" ref="dataForm" label-position="left" label-width="50px">
+				<el-form :model="questionForm" ref="dataForm" label-position="left"  >
 
 					<el-form-item prop="correctAnswer">
 						<el-upload class="upload-demo" ref="upload" action :on-preview="handlePreview"

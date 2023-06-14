@@ -2,13 +2,13 @@
 	<div class="table-inline-edit">
 		<el-card shadow="always">
 			<el-table v-loading="listLoading" :data="List" tooltip-effect="dark" style="width: 100%" size="medium">
-				<el-table-column label="姓名" width="150" align="center">
+				<el-table-column label="姓名" width="140" align="center">
 					<template slot-scope="{row}">
 						{{ row.studentName }}
 					</template>
 				</el-table-column>
 
-				<el-table-column label="性别" width="140" align="center">
+				<el-table-column label="性别" width="100" align="center">
 					<template slot-scope="{row}">
 						{{ row.studentSex }}
 					</template>
@@ -18,7 +18,7 @@
 						{{ row.studentSkill }}
 					</template>
 				</el-table-column>
-				<el-table-column label="联系电话" width="200" align="center">
+				<el-table-column label="联系电话" width="150" align="center">
 					<template slot-scope="{row}">
 						{{ row.studentNumber }}
 					</template>
